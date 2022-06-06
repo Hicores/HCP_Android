@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import cc.hicore.MiraiHCP.LoginManager.LoginManager;
 import cc.hicore.Utils.DataUtils;
 import cc.hicore.Utils.FileUtils;
 
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void add_new_account_click(){
-
+        LoginManager.addNewAccountDialog(this);
     }
     private void add_new_plugin_click(){
 
