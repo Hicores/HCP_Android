@@ -56,7 +56,6 @@ public class FileUtils {
             fInp.close();
             return Content;
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
     }

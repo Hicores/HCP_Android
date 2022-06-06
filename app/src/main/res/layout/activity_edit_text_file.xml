@@ -2,23 +2,27 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".EditTextFileActivity">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fillViewport="true"
         android:layout_above="@+id/EditText_Button_Save_All">
+
         <EditText
-            android:textIsSelectable="true"
+            android:id="@+id/EditText_EditTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/EditText_EditTextView"
-            android:singleLine="false"
+            android:inputType="textMultiLine"
             android:scrollbars="horizontal"
-            android:autofillHints=""
-            android:textSize="12sp"
-            android:inputType="textMultiLine" />
+            android:singleLine="false"
+            android:textIsSelectable="true"
+            android:gravity="top"
+            android:textSize="12sp" />
     </ScrollView>
 
     <Button
