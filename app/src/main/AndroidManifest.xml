@@ -9,9 +9,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/water"
+        android:icon="@drawable/global_icon"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/water"
+        android:roundIcon="@drawable/global_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.HCP_Android"
         tools:targetApi="31">

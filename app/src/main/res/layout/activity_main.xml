@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@drawable/cat_2"
+    android:background="@drawable/main_background_cat_2"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
@@ -58,7 +58,7 @@
         android:layout_below="@+id/Tab_View">
 
         <LinearLayout
-            android:id="@+id/Account_List"
+            android:id="@+id/Main_Account_List"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" />
@@ -73,7 +73,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:id="@+id/Plugin_List"/>
+            android:id="@+id/Main_Plugin_List"/>
     </ScrollView>
     <ScrollView
         android:layout_width="match_parent"
@@ -100,19 +100,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <Button
-                    android:id="@+id/DeviceInfo_Change"
+                    android:id="@+id/Main_Set_Button_Edit_Devinfo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/common_font_color"
                     android:text="编辑设备信息"/>
                 <Button
-                    android:id="@+id/DeviceInfo_Output"
+                    android:id="@+id/Main_Set_Button_Output_Devinfo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/common_font_color"
                     android:text="导出"/>
                 <Button
-                    android:id="@+id/DeviceInfo_Input"
+                    android:id="@+id/Main_Set_Button_Input_Devinfo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/common_font_color"
@@ -130,13 +130,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <Button
-                    android:id="@+id/Log_Bridge"
+                    android:id="@+id/Main_Set_Button_View_Bridge_Log"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/common_font_color"
                     android:text="软件日志"/>
                 <Button
-                    android:id="@+id/Log_Plugin"
+                    android:id="@+id/Main_Set_Button_View_PluginLog"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/common_font_color"
@@ -147,13 +147,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <Button
-                    android:id="@+id/Output_Mirai"
+                    android:id="@+id/Main_Set_Button_Output_MiraiLog"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/common_font_color"
                     android:text="导出Mirai日志"/>
                 <Button
-                    android:id="@+id/Clean_All_Log"
+                    android:id="@+id/Main_Set_Button_Clean_All_Log"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/common_font_color"
@@ -172,16 +172,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp">
                 <Button
-                    android:onClick="openSetDialog"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/common_font_color"
+                    android:id="@+id/Main_Set_Button_Keep_Alive"
                     android:text="允许后台"/>
                 <Button
-                    android:onClick="keepLiveBySetWhileList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/common_font_color"
+                    android:id="@+id/Main_Set_Button_Battery_While"
                     android:text="电量白名单"/>
             </LinearLayout>
         </LinearLayout>
@@ -189,7 +189,7 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/Main_Add_New_Button"
-        android:foreground="@drawable/add2"
+        android:foreground="@drawable/main_button_add2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
