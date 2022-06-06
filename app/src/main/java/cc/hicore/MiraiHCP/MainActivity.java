@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //设置窗口风格为全屏风格
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(Color.TRANSPARENT);
@@ -28,13 +29,16 @@ public class MainActivity extends AppCompatActivity {
                         View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
         );
         registerTabEvent();
+        registerSetButtonEvent();
     }
+
     private void add_new_account_click(){
 
     }
     private void add_new_plugin_click(){
 
     }
+    //注册Tab栏切换事件
     private void registerTabEvent(){
         TextView account_tab = findViewById(R.id.Tab_Account_List);
         TextView plugin_tab = findViewById(R.id.Tab_Plugin);
@@ -97,5 +101,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    private void registerSetButtonEvent(){
 
+    }
 }
