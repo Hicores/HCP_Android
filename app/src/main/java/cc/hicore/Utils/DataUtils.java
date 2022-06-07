@@ -3,6 +3,7 @@ package cc.hicore.Utils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -38,6 +39,11 @@ public class DataUtils {
         int read;
         while ((read = inp.read(buffer)) != -1) out.write(buffer, 0, read);
         return out.toByteArray();
+    }
+    public static void copyIns(InputStream ins, OutputStream out) throws IOException {
+        byte[] buffer = new byte[4096];
+        int read;
+        while ((read = ins.read(buffer)) != -1) out.write(buffer, 0, read);
     }
     public static String getStrMD5(String data){
         MessageDigest digest = null;
