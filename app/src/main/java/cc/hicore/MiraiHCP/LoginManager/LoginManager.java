@@ -160,11 +160,10 @@ public class LoginManager {
         RadioButton btn_form_ipad = mRoot.findViewById(R.id.Login_Form_ipad);
         RadioButton btn_form_watch = mRoot.findViewById(R.id.Login_Form_Watch);
         int use_form = GlobalConfig.getInt(status.AccountUin,"Use_Form",1);
-        if (use_form == 1) btn_form_android.setChecked(true);
-        else if (use_form == 2)btn_form_ipad.setChecked(true);
-        else if (use_form == 3)btn_form_watch.setChecked(true);
 
-        btn_form_android.setChecked(true);
+        if (use_form == 1) btn_form_android.setChecked(true);
+        else if (use_form == 2) btn_form_ipad.setChecked(true);
+        else if (use_form == 3) btn_form_watch.setChecked(true);
 
         CheckBox btn_save_pass = mRoot.findViewById(R.id.Login_Save_Password);
         btn_save_pass.setChecked(GlobalConfig.getBoolean(status.AccountUin,"save_pass",false));
@@ -188,7 +187,7 @@ public class LoginManager {
                         Toast.makeText(context, "账号输入有误", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    if (Password.length() < 6){
+                    if (btn_auto_login.isChecked() && Password.length() < 6){
                         Toast.makeText(context, "密码输入有误", Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -196,11 +195,15 @@ public class LoginManager {
                     if (btn_save_pass.isChecked()){
                         GlobalConfig.putString(AccountUin,"pass",Password);
                         GlobalConfig.putBoolean(AccountUin,"save_pass",true);
+                    }else {
+                        GlobalConfig.putString(AccountUin,"pass","");
+                        GlobalConfig.putBoolean(AccountUin,"save_pass",false);
                     }
                     //检测是否勾选自动登录
                     if (btn_auto_login.isChecked()){
                         GlobalConfig.putBoolean(AccountUin,"autoLogin",true);
-
+                    }else {
+                        GlobalConfig.putBoolean(AccountUin,"autoLogin",false);
                     }
                     //判断协议类型并保存
                     if (btn_form_android.isChecked()){
@@ -210,10 +213,8 @@ public class LoginManager {
                     }else if (btn_form_watch.isChecked()){
                         GlobalConfig.putInt(AccountUin,"Use_Form",3);
                     }
-                    //如果勾选了自动登录则进行自动登录
-                    if (btn_auto_login.isChecked()){
-                        newLoginAccount(context,AccountUin,Password);
-                    }
+
+
                 })
                 .setPositiveButton(status.LoginStatus != 6 ? "登录" : "下线", (dialog1, which) -> {
                     String AccountUin = edit_accountUin.getText().toString();
@@ -226,15 +227,20 @@ public class LoginManager {
                         Toast.makeText(context, "密码输入有误", Toast.LENGTH_SHORT).show();
                         return;
                     }
+
                     //检测是否勾选保存密码
                     if (btn_save_pass.isChecked()){
                         GlobalConfig.putString(AccountUin,"pass",Password);
                         GlobalConfig.putBoolean(AccountUin,"save_pass",true);
+                    }else {
+                        GlobalConfig.putString(AccountUin,"pass","");
+                        GlobalConfig.putBoolean(AccountUin,"save_pass",false);
                     }
                     //检测是否勾选自动登录
                     if (btn_auto_login.isChecked()){
                         GlobalConfig.putBoolean(AccountUin,"autoLogin",true);
-
+                    }else {
+                        GlobalConfig.putBoolean(AccountUin,"autoLogin",false);
                     }
                     //判断协议类型并保存
                     if (btn_form_android.isChecked()){
@@ -244,6 +250,8 @@ public class LoginManager {
                     }else if (btn_form_watch.isChecked()){
                         GlobalConfig.putInt(AccountUin,"Use_Form",3);
                     }
+
+
                     newLoginAccount(context,AccountUin,Password);
                 })
                 .setNeutralButton("删除", (dialog12, which) -> {
