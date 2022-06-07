@@ -20,7 +20,6 @@ import android.widget.Toast;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -32,7 +31,6 @@ import cc.hicore.Utils.DataUtils;
 import cc.hicore.Utils.FileUtils;
 
 public class MainActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +50,13 @@ public class MainActivity extends AppCompatActivity {
         registerTabEvent();
         registerSetButtonEvent();
         registerCallback();
+
+
+        //这里判断是否已经登录,后续可能加上一些使用服务来进行保活的操作,有可能在Activity没创建之前就进行了登录,所以就需要判断一下防止重复加载登录
+        if (!GlobalEnv.IsInited.getAndSet(true)){
+            LoginManager.loadAllAccount();
+            LoginManager.loginAutoLogin(this);
+        }
     }
 
     private void add_new_account_click(){

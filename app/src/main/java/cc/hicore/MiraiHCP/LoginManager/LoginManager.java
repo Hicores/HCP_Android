@@ -315,6 +315,25 @@ public class LoginManager {
             status.LoginStatus = 6;
         }
     }
+    public static void loadAllAccount(){
+        List<String> accounts = GlobalConfig.getList("global","accountList");
+        for (String AccountUin : accounts){
+            BotStatus status = new BotStatus();
+            status.AccountUin = AccountUin;
+            addBots.put(AccountUin,status);
+        }
+    }
+    public static void loginAutoLogin(Context context){
+        for (String AccountUin : addBots.keySet()){
+            if (GlobalConfig.getBoolean(AccountUin,"autoLogin",false)){
+                String Password = GlobalConfig.getString(AccountUin,"pass","");
+                Bot bot = addBots.get(AccountUin).botInstance;
+                if (bot == null){
+                    newLoginAccount(context,AccountUin,Password);
+                }
+            }
+        }
+    }
     private static void registerProcessorEvent(Bot bot){
 
     }
