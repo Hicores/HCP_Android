@@ -1,5 +1,7 @@
 package cc.hicore.Utils;
 
+import org.apache.logging.log4j.util.Chars;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,6 +11,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -26,6 +29,25 @@ public class HttpUtils {
             HttpURLConnection connection = (HttpURLConnection) new URL(Path).openConnection();
             InputStream ins = connection.getInputStream();
             String Content = new String(DataUtils.readAllBytes(ins), StandardCharsets.UTF_8);
+            ins.close();
+            return Content;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public static String getContentGBK(String Path) {
+        try {
+            if (Thread.currentThread().getName().equals("main")) {
+                StringBuilder builder = new StringBuilder();
+                Thread thread = new Thread(() -> builder.append(getContent(Path)));
+                thread.start();
+                thread.join();
+                return builder.toString();
+            }
+            HttpURLConnection connection = (HttpURLConnection) new URL(Path).openConnection();
+            InputStream ins = connection.getInputStream();
+            String Content = new String(DataUtils.readAllBytes(ins), Charset.forName("GBK"));
             ins.close();
             return Content;
         } catch (Exception e) {

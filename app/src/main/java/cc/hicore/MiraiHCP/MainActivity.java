@@ -2,18 +2,28 @@ package cc.hicore.MiraiHCP;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,8 +39,19 @@ import java.util.zip.ZipOutputStream;
 import cc.hicore.MiraiHCP.LoginManager.LoginManager;
 import cc.hicore.Utils.DataUtils;
 import cc.hicore.Utils.FileUtils;
+import cc.hicore.Utils.HttpUtils;
 
 public class MainActivity extends AppCompatActivity {
+    private static final HandlerThread worker = new HandlerThread("HCP_Android_Worker");
+    private static final Handler handler;
+    static {
+        worker.start();
+        handler = new Handler(worker.getLooper());
+    }
+
+    private LinearLayout AccountList;
+    private LinearLayout PluginList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +78,72 @@ public class MainActivity extends AppCompatActivity {
             LoginManager.loadAllAccount();
             LoginManager.loginAutoLogin(this);
         }
+        AccountList = findViewById(R.id.Main_Account_List);
+        PluginList = findViewById(R.id.Main_Plugin_List);
+        handler.postDelayed(this::onFlushList,1000);
+    }
+    AtomicBoolean isShow = new AtomicBoolean();
+    private void onFlushList(){
+        if (isShow.get()){
+            new Handler(Looper.getMainLooper()).post(()->{
+                if (AccountList.getChildCount() != LoginManager.addBots.size()){
+                    AccountList.removeAllViews();
+                    for (String AccountUin : LoginManager.addBots.keySet()){
+                        LoginManager.BotStatus status = LoginManager.addBots.get(AccountUin);
+                        if (status != null){
+                            RelativeLayout newItem = (RelativeLayout) getLayoutInflater().inflate(R.layout.account_item,null);
+                            newItem.setTag(status);
+                            newItem.setOnClickListener(v->LoginManager.onAccountItemClick(this,status));
+                            AccountList.addView(newItem);
+                        }
+                    }
+                }
+                for (int i=0;i < AccountList.getChildCount();i++){
+                    View v = AccountList.getChildAt(i);
+                    if (v instanceof RelativeLayout){
+                        RelativeLayout mItemLayout = (RelativeLayout) v;
+                        LoginManager.BotStatus status = (LoginManager.BotStatus) mItemLayout.getTag();
+                        if (status != null) {
+                            ImageView avatarImage = mItemLayout.findViewById(R.id.Account_Item_Header);
+                            String avaPath = updateAvatarCache(status.getAvatarLink());
+                            if (avaPath != null && !avaPath.equals(avatarImage.getTag())){
+                                avatarImage.setBackground(Drawable.createFromPath(avaPath));
+                                avatarImage.setTag(avaPath);
+                            }
+
+                            TextView nameView = mItemLayout.findViewById(R.id.Account_Item_Uin);
+                            nameView.setText(status.getName() + "(" + status.AccountUin + ")");
+
+                            TextView statusView = mItemLayout.findViewById(R.id.Account_Item_Status);
+                            statusView.setText("状态:" + status.getStatus());
+                        }
+                    }
+                }
+            });
+        }
+        if (!isDestroyed()){
+            handler.postDelayed(this::onFlushList,1000);
+        }
+    }
+    private String updateAvatarCache(String Link){
+        if (TextUtils.isEmpty(Link))return null;
+        String MD5 = DataUtils.getStrMD5(Link);
+        File cachePath = new File(getCacheDir(),MD5);
+        if (cachePath.exists())return cachePath.getAbsolutePath();
+        new Thread(()-> HttpUtils.DownloadToFile(Link,cachePath.getAbsolutePath())).start();
+        return null;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isShow.getAndSet(true);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isShow.getAndSet(false);
     }
 
     private void add_new_account_click(){
@@ -77,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
 
         View add_new_button = findViewById(R.id.Main_Add_New_Button);
 
-        AtomicBoolean isNewAccount = new AtomicBoolean();
+        AtomicBoolean isNewAccount = new AtomicBoolean(true);
 
         account_tab.setOnClickListener(v->{
             account_view.setVisibility(View.VISIBLE);

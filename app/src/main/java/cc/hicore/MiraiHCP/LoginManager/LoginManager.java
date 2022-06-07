@@ -40,13 +40,14 @@ import cc.hicore.MiraiHCP.GlobalEnv;
 import cc.hicore.MiraiHCP.R;
 import cc.hicore.MiraiHCP.config.GlobalConfig;
 import cc.hicore.Utils.HttpUtils;
+import cc.hicore.Utils.Utils;
 import kotlin.coroutines.Continuation;
 
 public class LoginManager {
     public static class BotStatus{
         int LoginStatus;
         Bot botInstance;
-        String AccountUin;
+        public String AccountUin;
 
         private String Name;
         private String AvatarUrl;
@@ -85,10 +86,10 @@ public class LoginManager {
         private void initAvatarAndName(){
             if (TextUtils.isEmpty(AvatarUrl)){
                 try{
-                    String Content = HttpUtils.getContent("https://r.qzone.qq.com/fcg-bin/cgi_get_portrait.fcg?uins="+AccountUin);
+                    String Content = HttpUtils.getContentGBK("https://r.qzone.qq.com/fcg-bin/cgi_get_portrait.fcg?uins="+AccountUin);
                     JSONObject newJson = new JSONObject(Content.substring(Content.indexOf("(")+1,Content.lastIndexOf(")")));
                     JSONArray mArray = newJson.getJSONArray(AccountUin);
-                    AvatarUrl = mArray.getString(0);
+                    AvatarUrl = "https://q1.qlogo.cn/g?b=qq&s=100&nk="+AccountUin;
                     Name = mArray.getString(6);
                 }catch (Exception e){}
             }
@@ -119,13 +120,11 @@ public class LoginManager {
                         Toast.makeText(context, "账号输入有误", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    if (Password.length() < 6){
-                        Toast.makeText(context, "密码输入有误", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+
                     //检测是否勾选保存密码
                     if (btn_save_pass.isChecked()){
                         GlobalConfig.putString(AccountUin,"pass",Password);
+                        GlobalConfig.putBoolean(AccountUin,"save_pass",true);
                     }
                     //检测是否勾选自动登录
                     if (btn_auto_login.isChecked()){
@@ -140,14 +139,123 @@ public class LoginManager {
                         GlobalConfig.putInt(AccountUin,"Use_Form",3);
                     }
 
-                    BotStatus newStatus = new BotStatus();
-                    newStatus.AccountUin = AccountUin;
-                    addBots.put(AccountUin,newStatus);
+
                     addAccountInList(AccountUin);
+                    //如果勾选了自动登录则进行自动登录
+                    if (btn_auto_login.isChecked()){
+                        if (Password.length() < 6){
+                            Toast.makeText(context, "密码输入有误", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        newLoginAccount(context,AccountUin,Password);
+                    }
+                }).create();
+        dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        dialog.show();
+    }
+    public static void onAccountItemClick(Context context,BotStatus status){
+        LinearLayout mRoot = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.dialog_account_set,null);
+
+        RadioButton btn_form_android = mRoot.findViewById(R.id.Login_Form_Android);
+        RadioButton btn_form_ipad = mRoot.findViewById(R.id.Login_Form_ipad);
+        RadioButton btn_form_watch = mRoot.findViewById(R.id.Login_Form_Watch);
+        int use_form = GlobalConfig.getInt(status.AccountUin,"Use_Form",1);
+        if (use_form == 1) btn_form_android.setChecked(true);
+        else if (use_form == 2)btn_form_ipad.setChecked(true);
+        else if (use_form == 3)btn_form_watch.setChecked(true);
+
+        btn_form_android.setChecked(true);
+
+        CheckBox btn_save_pass = mRoot.findViewById(R.id.Login_Save_Password);
+        btn_save_pass.setChecked(GlobalConfig.getBoolean(status.AccountUin,"save_pass",false));
+
+        CheckBox btn_auto_login = mRoot.findViewById(R.id.Login_Auto_Login);
+        btn_auto_login.setChecked(GlobalConfig.getBoolean(status.AccountUin,"autoLogin",false));
+
+        EditText edit_accountUin = mRoot.findViewById(R.id.Login_Input_QQNumber);
+        edit_accountUin.setText(status.AccountUin);
+        edit_accountUin.setEnabled(false);
+        EditText edit_password = mRoot.findViewById(R.id.Login_Input_Password);
+        if (btn_save_pass.isChecked())edit_password.setText(GlobalConfig.getString(status.AccountUin,"pass",""));
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setTitle("账号信息")
+                .setView(mRoot)
+                .setNegativeButton("保存", (dialogInterface, i) -> {
+                    String AccountUin = edit_accountUin.getText().toString();
+                    String Password = edit_password.getText().toString();
+                    if (AccountUin.length() < 5 || AccountUin.length() > 10){
+                        Toast.makeText(context, "账号输入有误", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (Password.length() < 6){
+                        Toast.makeText(context, "密码输入有误", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    //检测是否勾选保存密码
+                    if (btn_save_pass.isChecked()){
+                        GlobalConfig.putString(AccountUin,"pass",Password);
+                        GlobalConfig.putBoolean(AccountUin,"save_pass",true);
+                    }
+                    //检测是否勾选自动登录
+                    if (btn_auto_login.isChecked()){
+                        GlobalConfig.putBoolean(AccountUin,"autoLogin",true);
+
+                    }
+                    //判断协议类型并保存
+                    if (btn_form_android.isChecked()){
+                        GlobalConfig.putInt(AccountUin,"Use_Form",1);
+                    }else if (btn_form_ipad.isChecked()){
+                        GlobalConfig.putInt(AccountUin,"Use_Form",2);
+                    }else if (btn_form_watch.isChecked()){
+                        GlobalConfig.putInt(AccountUin,"Use_Form",3);
+                    }
                     //如果勾选了自动登录则进行自动登录
                     if (btn_auto_login.isChecked()){
                         newLoginAccount(context,AccountUin,Password);
                     }
+                })
+                .setPositiveButton(status.LoginStatus != 6 ? "登录" : "下线", (dialog1, which) -> {
+                    String AccountUin = edit_accountUin.getText().toString();
+                    String Password = edit_password.getText().toString();
+                    if (AccountUin.length() < 5 || AccountUin.length() > 10){
+                        Toast.makeText(context, "账号输入有误", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (Password.length() < 6){
+                        Toast.makeText(context, "密码输入有误", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    //检测是否勾选保存密码
+                    if (btn_save_pass.isChecked()){
+                        GlobalConfig.putString(AccountUin,"pass",Password);
+                        GlobalConfig.putBoolean(AccountUin,"save_pass",true);
+                    }
+                    //检测是否勾选自动登录
+                    if (btn_auto_login.isChecked()){
+                        GlobalConfig.putBoolean(AccountUin,"autoLogin",true);
+
+                    }
+                    //判断协议类型并保存
+                    if (btn_form_android.isChecked()){
+                        GlobalConfig.putInt(AccountUin,"Use_Form",1);
+                    }else if (btn_form_ipad.isChecked()){
+                        GlobalConfig.putInt(AccountUin,"Use_Form",2);
+                    }else if (btn_form_watch.isChecked()){
+                        GlobalConfig.putInt(AccountUin,"Use_Form",3);
+                    }
+                    newLoginAccount(context,AccountUin,Password);
+                })
+                .setNeutralButton("删除", (dialog12, which) -> {
+                    new AlertDialog.Builder(context)
+                            .setTitle("确认删除")
+                            .setMessage("你确认要删除账号:"+status.AccountUin+"吗?")
+                            .setPositiveButton("确认删除", (dialog13, which1) -> {
+                                removeAccountFromList(status.AccountUin);
+                            }).setNeutralButton("取消", (dialog14, which12) -> {
+
+                            }).show();
+
                 }).create();
         dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
         dialog.show();
@@ -165,11 +273,16 @@ public class LoginManager {
         List<String> accounts = GlobalConfig.getList("global","accountList");
         accounts.remove(Account);
         GlobalConfig.putList("global","accountList",accounts);
+        addBots.remove(Account);
     }
     private static void addAccountInList(String Account){
         List<String> accounts = GlobalConfig.getList("global","accountList");
         if (!accounts.contains(Account)){
             accounts.add(Account);
+
+            BotStatus newStatus = new BotStatus();
+            newStatus.AccountUin = Account;
+            addBots.put(Account,newStatus);
         }
         GlobalConfig.putList("global","accountList",accounts);
     }
@@ -269,8 +382,8 @@ public class LoginManager {
             setLoginSolver(solver);
             setCacheDir(context.getFilesDir());
             fileBasedDeviceInfo(context.getFilesDir()+"/device.json");
-            redirectBotLogToFile(new File(context.getExternalCacheDir()+"/log","mirai.log"));
-            redirectNetworkLogToFile(new File(context.getExternalCacheDir()+"/log","mirai_net.log"));
+            redirectBotLogToFile(new File(context.getExternalCacheDir()+"/log/","mirai.log"));
+            redirectNetworkLogToFile(new File(context.getExternalCacheDir()+"/log/","mirai_net.log"));
 
             int form = GlobalConfig.getInt(AccountUin,"Use_Form",1);
             if (form == 1){
@@ -294,6 +407,14 @@ public class LoginManager {
                     status.LoginStatus = 6;
                 }catch (LoginFailedException e){
                     status.LoginStatus = 4;
+                    Utils.PostToMain(()->{
+                        new AlertDialog.Builder(context)
+                                .setTitle(status.AccountUin+"登录失败")
+                                .setMessage(e.getMessage())
+                                .setNegativeButton("确定", (dialog, which) -> {
+
+                                }).show();
+                    });
                 }catch (Throwable th){
                     status.LoginStatus = 5;
                     newBotInstance.close();

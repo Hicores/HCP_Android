@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/Account_Item_Header"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp" />
+    <TextView
+        android:id="@+id/Account_Item_Uin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/Account_Item_Header"
+        android:text="账号:神秘人(10001)"
+        android:textColor="@color/common_font_color"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/Account_Item_Status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Account_Item_Uin"
+        android:layout_toRightOf="@id/Account_Item_Header"
+        android:text="状态:未登录"
+        android:textColor="@color/common_font_color"
+        android:textSize="24sp" />
+</RelativeLayout>
