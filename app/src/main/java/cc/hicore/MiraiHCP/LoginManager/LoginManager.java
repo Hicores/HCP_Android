@@ -40,6 +40,7 @@ import cc.hicore.MiraiHCP.GlobalEnv;
 import cc.hicore.MiraiHCP.R;
 import cc.hicore.MiraiHCP.config.GlobalConfig;
 import cc.hicore.Utils.HttpUtils;
+import cc.hicore.Utils.ToastUtils;
 import cc.hicore.Utils.Utils;
 import kotlin.coroutines.Continuation;
 
@@ -117,7 +118,7 @@ public class LoginManager {
                     String AccountUin = edit_accountUin.getText().toString();
                     String Password = edit_password.getText().toString();
                     if (AccountUin.length() < 5 || AccountUin.length() > 10){
-                        Toast.makeText(context, "账号输入有误", Toast.LENGTH_SHORT).show();
+                        ToastUtils.ShowToast(context,"账号输入有误");
                         return;
                     }
 
@@ -144,7 +145,7 @@ public class LoginManager {
                     //如果勾选了自动登录则进行自动登录
                     if (btn_auto_login.isChecked()){
                         if (Password.length() < 6){
-                            Toast.makeText(context, "密码输入有误", Toast.LENGTH_SHORT).show();
+                            ToastUtils.ShowToast(context,"密码输入有误");
                             return;
                         }
                         newLoginAccount(context,AccountUin,Password);
@@ -184,11 +185,11 @@ public class LoginManager {
                     String AccountUin = edit_accountUin.getText().toString();
                     String Password = edit_password.getText().toString();
                     if (AccountUin.length() < 5 || AccountUin.length() > 10){
-                        Toast.makeText(context, "账号输入有误", Toast.LENGTH_SHORT).show();
+                        ToastUtils.ShowToast(context,"账号输入有误");
                         return;
                     }
                     if (btn_auto_login.isChecked() && Password.length() < 6){
-                        Toast.makeText(context, "密码输入有误", Toast.LENGTH_SHORT).show();
+                        ToastUtils.ShowToast(context,"密码输入有误");
                         return;
                     }
                     //检测是否勾选保存密码
@@ -220,11 +221,11 @@ public class LoginManager {
                     String AccountUin = edit_accountUin.getText().toString();
                     String Password = edit_password.getText().toString();
                     if (AccountUin.length() < 5 || AccountUin.length() > 10){
-                        Toast.makeText(context, "账号输入有误", Toast.LENGTH_SHORT).show();
+                        ToastUtils.ShowToast(context,"账号输入有误");
                         return;
                     }
                     if (Password.length() < 6){
-                        Toast.makeText(context, "密码输入有误", Toast.LENGTH_SHORT).show();
+                        ToastUtils.ShowToast(context,"密码输入有误");
                         return;
                     }
 

@@ -5,7 +5,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -30,6 +32,7 @@ import android.widget.Toast;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -37,9 +40,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import cc.hicore.MiraiHCP.LoginManager.LoginManager;
+import cc.hicore.MiraiHCP.PluginManager.PluginManager;
 import cc.hicore.Utils.DataUtils;
 import cc.hicore.Utils.FileUtils;
 import cc.hicore.Utils.HttpUtils;
+import cc.hicore.Utils.ToastUtils;
 
 public class MainActivity extends AppCompatActivity {
     private static final HandlerThread worker = new HandlerThread("HCP_Android_Worker");
@@ -48,10 +53,8 @@ public class MainActivity extends AppCompatActivity {
         worker.start();
         handler = new Handler(worker.getLooper());
     }
-
     private LinearLayout AccountList;
     private LinearLayout PluginList;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,23 +136,33 @@ public class MainActivity extends AppCompatActivity {
         new Thread(()-> HttpUtils.DownloadToFile(Link,cachePath.getAbsolutePath())).start();
         return null;
     }
-
     @Override
     protected void onResume() {
         super.onResume();
         isShow.getAndSet(true);
     }
-
     @Override
     protected void onPause() {
         super.onPause();
         isShow.getAndSet(false);
     }
-
     private void add_new_account_click(){
         LoginManager.addNewAccountDialog(this);
     }
     private void add_new_plugin_click(){
+        new AlertDialog.Builder(this)
+                .setTitle("选择添加方式")
+                .setItems(new String[]{"在线下载", "本地添加"}, (dialog, which) -> {
+                    if (which == 0){
+                        ToastUtils.ShowToast(this,"未实装");
+
+                    }else if (which == 1){
+                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                        intent.addCategory(Intent.CATEGORY_OPENABLE);
+                        intent.setType("*/*");
+                        launcher_input_hcp.launch(intent);
+                    }
+                }).show();
 
     }
     //注册Tab栏切换事件
@@ -260,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.Main_Set_Button_Clean_All_Log).setOnClickListener(v->{
             FileUtils.deleteFile(new File(getCacheDir() + "/log"));
             new File(getCacheDir() + "/log").mkdirs();
-            Toast.makeText(this, "已清除日志", Toast.LENGTH_SHORT).show();
+            ToastUtils.ShowToast(this,"已清除日志");
         });
         //后台设置按钮事件
         findViewById(R.id.Main_Set_Button_Battery_While).setOnClickListener(v->{
@@ -269,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         findViewById(R.id.Main_Set_Button_Keep_Alive).setOnClickListener(v->{
-            Toast.makeText(this, "请自行设置", Toast.LENGTH_LONG).show();
+            ToastUtils.ShowToast(this,"请自行设置");
 
             Intent intent = new Intent("android.settings.APPLICATION_DETAILS_SETTINGS");
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -280,6 +293,7 @@ public class MainActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> launcher_output_devInfo;
     ActivityResultLauncher<Intent> launcher_input_devInfo;
     ActivityResultLauncher<Intent> launcher_output_miraiLog;
+    ActivityResultLauncher<Intent> launcher_input_hcp;
     private void registerCallback(){
         launcher_output_devInfo = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == RESULT_OK){
@@ -288,9 +302,9 @@ public class MainActivity extends AppCompatActivity {
                     OutputStream out = getContentResolver().openOutputStream(u);
                     out.write(FileUtils.ReadFile(new File(getFilesDir() + "/device.json")));
                     out.close();
-                    Toast.makeText(this, "导出成功", Toast.LENGTH_SHORT).show();
+                    ToastUtils.ShowToast(this,"导出成功");
                 }catch (Exception e){
-                    Toast.makeText(this, "导出失败", Toast.LENGTH_SHORT).show();
+                    ToastUtils.ShowToast(this,"导出失败");
                 }
             }
         });
@@ -304,13 +318,13 @@ public class MainActivity extends AppCompatActivity {
                     try{
                         JSONObject json = new JSONObject(new String(arr));
                     }catch (Exception e){
-                        Toast.makeText(this, "不是有效的JSON文件", Toast.LENGTH_SHORT).show();
+                        ToastUtils.ShowToast(this,"不是有效的JSON文件");
                         return;
                     }
                     FileUtils.WriteToFile(getFilesDir() + "/device.json",arr);
-                    Toast.makeText(this, "导入成功", Toast.LENGTH_SHORT).show();
+                    ToastUtils.ShowToast(this,"导入成功");
                 }catch (Exception e){
-                    Toast.makeText(this, "导入失败", Toast.LENGTH_SHORT).show();
+                    ToastUtils.ShowToast(this,"导入失败");
                 }
             }
         });
@@ -331,9 +345,25 @@ public class MainActivity extends AppCompatActivity {
                         zipOut.write(FileUtils.ReadFile(new File(getCacheDir()+"/log/mirai_net.log")));
                     }
                     zipOut.close();
-                    Toast.makeText(this, "导出成功", Toast.LENGTH_SHORT).show();
+                    ToastUtils.ShowToast(this,"导出成功");
                 }catch (Exception e){
-                    Toast.makeText(this, "导出失败", Toast.LENGTH_SHORT).show();
+                    ToastUtils.ShowToast(this,"导出失败");
+                }
+            }
+        });
+        launcher_input_hcp = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == RESULT_OK){
+                try{
+                    Uri uri = result.getData().getData();
+                    InputStream ins = getContentResolver().openInputStream(uri);
+                    String cacheHCP = getCacheDir()+"/" + Math.random();
+                    FileOutputStream out = new FileOutputStream(cacheHCP);
+                    DataUtils.copyIns(ins,out);
+                    out.close();
+                    PluginManager.PreloadHCPDialog(this,cacheHCP);
+                    ToastUtils.ShowToast(this,"导入成功");
+                }catch (Exception e){
+                    ToastUtils.ShowToast(this,"导入失败");
                 }
             }
         });

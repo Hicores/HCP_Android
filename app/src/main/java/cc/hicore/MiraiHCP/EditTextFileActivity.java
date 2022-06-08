@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import cc.hicore.Utils.FileUtils;
+import cc.hicore.Utils.ToastUtils;
 
 public class EditTextFileActivity extends AppCompatActivity {
 
@@ -48,7 +49,7 @@ public class EditTextFileActivity extends AppCompatActivity {
         ed.setText(FileUtils.ReadFileString(path));
         findViewById(R.id.EditText_Button_Save_All).setOnClickListener(v->{
             FileUtils.WriteToFile(path,ed.getText().toString());
-            Toast.makeText(this, "已保存", Toast.LENGTH_SHORT).show();
+            ToastUtils.ShowToast(this,"已保存");
         });
     }
 }
