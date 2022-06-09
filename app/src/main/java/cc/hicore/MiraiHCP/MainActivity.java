@@ -361,9 +361,8 @@ public class MainActivity extends AppCompatActivity {
                     DataUtils.copyIns(ins,out);
                     out.close();
                     PluginManager.PreloadHCPDialog(this,cacheHCP);
-                    ToastUtils.ShowToast(this,"导入成功");
                 }catch (Exception e){
-                    ToastUtils.ShowToast(this,"导入失败");
+                    ToastUtils.ShowToast(this,"导入失败:\n"+e);
                 }
             }
         });

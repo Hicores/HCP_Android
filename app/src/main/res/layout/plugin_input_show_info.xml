@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:id="@+id/Plugin_Add_Name"
+            android:textSize="16sp"
+            android:textColor="@color/common_font_color"
+            android:text="插件名字:管理员监视器"/>
+
+        <TextView
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:id="@+id/Plugin_Add_ID"
+            android:textSize="16sp"
+            android:textColor="@color/common_font_color"
+            android:text="插件ID:adminObserve"/>
+
+        <TextView
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:id="@+id/Plugin_Add_Version"
+            android:textSize="16sp"
+            android:textColor="@color/common_font_color"
+            android:text="插件版本号:1.0.0(New)"/>
+
+        <TextView
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:id="@+id/Plugin_Add_Author"
+            android:textSize="16sp"
+            android:textColor="@color/common_font_color"
+            android:text="插件作者:Hicores"/>
+
+        <TextView
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:id="@+id/Plugin_Add_Desc"
+            android:textSize="16sp"
+            android:textColor="@color/common_font_color"
+            android:text="插件描述:78687678528767898767678\n5786786786796"/>
+    </LinearLayout>
+</ScrollView>
