@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
     private String updateAvatarCache(String Link){
         if (TextUtils.isEmpty(Link))return null;
         String MD5 = DataUtils.getStrMD5(Link);
-        File cachePath = new File(getCacheDir(),MD5);
+        File cachePath = new File(getCacheDir()+"/avatar",MD5);
         if (cachePath.exists())return cachePath.getAbsolutePath();
         new Thread(()-> HttpUtils.DownloadToFile(Link,cachePath.getAbsolutePath())).start();
         return null;
