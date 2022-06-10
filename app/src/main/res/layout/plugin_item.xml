@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/Plugin_Item_Icon"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp" />
+    <TextView
+        android:id="@+id/Plugin_Item_Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/Plugin_Item_Icon"
+        android:text="管理监视器(1.0.0)"
+        android:textColor="@color/common_font_color"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/Plugin_Item_Port"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Plugin_Item_Name"
+        android:layout_toRightOf="@id/Plugin_Item_Icon"
+        android:text="本地端口号:18897"
+        android:textColor="@color/common_font_color"
+        android:textSize="24sp" />
+</RelativeLayout>

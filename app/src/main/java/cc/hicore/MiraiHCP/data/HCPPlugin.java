@@ -8,6 +8,7 @@ import cc.hicore.HCPBridge.data.IHCPEvent;
 
 public class HCPPlugin {
     //基础信息
+    public String id;
     public String authorName;
     public String pluginName;
     public String version;
@@ -17,6 +18,7 @@ public class HCPPlugin {
     public boolean isRunning;
     public boolean isLoaded;
     public boolean isRemoved;
+
     public HCPBridge bridge;
     public HCPResUtils resUtils;
     public IHCPEvent eventReceiver;

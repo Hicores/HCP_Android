@@ -34,7 +34,9 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation files('../jars/mirai-core-all-2.12.0-all.jar')
     implementation files('Z:/Project/HCPRebot/HCPApi/out/artifacts/HCPApi_jar/HCPApi.jar')
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    def shizuku_version = '12.1.0'
+    implementation "dev.rikka.shizuku:api:$shizuku_version"
+
+    implementation "dev.rikka.shizuku:provider:$shizuku_version"
 }

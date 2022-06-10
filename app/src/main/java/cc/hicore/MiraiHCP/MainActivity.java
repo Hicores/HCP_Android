@@ -2,12 +2,11 @@ package cc.hicore.MiraiHCP;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -16,18 +15,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
-import android.os.Message;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -41,6 +39,7 @@ import java.util.zip.ZipOutputStream;
 
 import cc.hicore.MiraiHCP.LoginManager.LoginManager;
 import cc.hicore.MiraiHCP.PluginManager.PluginManager;
+import cc.hicore.MiraiHCP.data.HCPPlugin;
 import cc.hicore.Utils.DataUtils;
 import cc.hicore.Utils.FileUtils;
 import cc.hicore.Utils.HttpUtils;
@@ -84,8 +83,10 @@ public class MainActivity extends AppCompatActivity {
         AccountList = findViewById(R.id.Main_Account_List);
         PluginList = findViewById(R.id.Main_Plugin_List);
         handler.postDelayed(this::onFlushList,1000);
+        handler.postDelayed(this::onFlushPluginList,1000);
     }
     AtomicBoolean isShow = new AtomicBoolean();
+    @SuppressLint("SetTextI18n")
     private void onFlushList(){
         if (isShow.get()){
             new Handler(Looper.getMainLooper()).post(()->{
@@ -126,6 +127,45 @@ public class MainActivity extends AppCompatActivity {
         }
         if (!isDestroyed()){
             handler.postDelayed(this::onFlushList,1000);
+        }
+    }
+    @SuppressLint("SetTextI18n")
+    private void onFlushPluginList(){
+        if (isShow.get()){
+            new Handler(Looper.getMainLooper()).post(()->{
+                if (PluginList.getChildCount() != PluginManager.pluginInfo.size()){
+                    PluginList.removeAllViews();
+                    for (String id : PluginManager.pluginInfo.keySet()){
+                        HCPPlugin plugin = PluginManager.pluginInfo.get(id);
+                        if (plugin != null){
+                            ViewGroup plugin_item = (ViewGroup) getLayoutInflater().inflate(R.layout.plugin_item,null);
+                            plugin_item.setTag(plugin);
+                            PluginList.addView(plugin_item);
+
+                            ImageView plugin_icon = plugin_item.findViewById(R.id.Plugin_Item_Icon);
+                            plugin_icon.setBackground(Drawable.createFromPath(PluginManager.getPluginIconPath(plugin.id)));
+                        }
+                    }
+                }
+
+                for (int i=0;i<PluginList.getChildCount();i++){
+                    ViewGroup plugin_item = (ViewGroup) PluginList.getChildAt(i);
+                    TextView plugin_name = plugin_item.findViewById(R.id.Plugin_Item_Name);
+
+                    TextView plugin_port = plugin_item.findViewById(R.id.Plugin_Item_Port);
+                    HCPPlugin plugin = (HCPPlugin) plugin_item.getTag();
+
+                    plugin_name.setText(plugin.pluginName+"("+plugin.version+")");
+                    if (plugin.isRunning && plugin.eventReceiver != null){
+                        plugin_port.setText("管理端口:"+plugin.eventReceiver.getPort());
+                    }else {
+                        plugin_port.setText("管理端口:不可用");
+                    }
+                }
+            });
+        }
+        if (!isDestroyed()){
+            handler.postDelayed(this::onFlushPluginList,1000);
         }
     }
     private String updateAvatarCache(String Link){
