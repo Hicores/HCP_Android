@@ -30,6 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -466,5 +467,25 @@ public class LoginManager {
     }
     private static void registerProcessorEvent(Bot bot){
 
+    }
+    public static Bot getAvailBot(String AccountUin){
+        BotStatus status = addBots.get(AccountUin);
+        if (status != null){
+            Bot bot = status.botInstance;
+            if (bot.isOnline())return bot;
+        }
+        return null;
+    }
+    public static ArrayList<String> getAllUin(){
+        ArrayList<String> newArr = new ArrayList<>();
+        for (BotStatus status : addBots.values()){
+            if (status != null){
+                Bot bot = status.botInstance;
+                if (bot != null && bot.isOnline()){
+                    newArr.add(String.valueOf(bot.getId()));
+                }
+            }
+        }
+        return newArr;
     }
 }

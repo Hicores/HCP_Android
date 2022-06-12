@@ -151,7 +151,7 @@ public class PluginManager {
                     pluginInfo.put(id,newInfo);
                 }
             }
-        }catch (Exception e){ }
+        }catch (Exception ignored){ }
 
     }
     public static String  getPluginIconPath(String PluginID){
