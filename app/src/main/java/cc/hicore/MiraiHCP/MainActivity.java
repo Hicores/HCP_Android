@@ -264,6 +264,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         add_new_button.setOnClickListener(v->{
+            "111".substring(666);
             if (isNewAccount.get()){
                 add_new_account_click();
             }else {

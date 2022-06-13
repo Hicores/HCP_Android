@@ -29,4 +29,10 @@ public class CrashActivity extends Activity {
             Toast.makeText(this, "已复制", Toast.LENGTH_SHORT).show();
         });
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.exit(0);
+    }
 }
