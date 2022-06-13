@@ -141,6 +141,9 @@ public class MainActivity extends AppCompatActivity {
                             ViewGroup plugin_item = (ViewGroup) getLayoutInflater().inflate(R.layout.plugin_item,null);
                             plugin_item.setTag(plugin);
                             PluginList.addView(plugin_item);
+                            plugin_item.setOnClickListener(v->{
+                                PluginManager.showPluginControlDialog(this,id);
+                            });
 
                             ImageView plugin_icon = plugin_item.findViewById(R.id.Plugin_Item_Icon);
                             plugin_icon.setBackground(Drawable.createFromPath(PluginManager.getPluginIconPath(plugin.id)));

@@ -1,7 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:text="插件状态:已停用"
+            android:textSize="16sp"
+            android:textColor="@color/common_font_color"
+            android:id="@+id/Plugin_Control_Status"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="插件作者:Hicore"
+            android:textSize="16sp"
+            android:textColor="@color/common_font_color"
+            android:id="@+id/Plugin_Control_Author"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:textSize="12sp"
+            android:text="插件输出:插件未启用,输出不可用"
+            android:textColor="@color/common_font_color"
+            android:id="@+id/Plugin_Control_Output_Desc"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:textSize="12sp"
+            android:text="插件描述:xxxxxxxx"
+            android:textColor="@color/common_font_color"
+            android:id="@+id/Plugin_Control_Desc"/>
 
-
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>
