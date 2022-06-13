@@ -22,6 +22,10 @@
             android:name=".ManagerSpaceActivity"
             android:exported="true" />
         <activity
+            android:name=".CrashActivity"
+            android:process=":crash"
+            android:exported="true" />
+        <activity
             android:name=".EditTextFileActivity"
             android:exported="false" />
         <activity

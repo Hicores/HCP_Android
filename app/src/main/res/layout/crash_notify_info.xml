@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/Crash_Image_Bar"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:background="@drawable/crash"/>
+    <TextView
+        android:id="@+id/Crash_Tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_below="@+id/Crash_Image_Bar"
+        android:gravity="center"
+        android:text="HCP_Android崩溃了，你可以将下面的信息发给开发者，以便于更好地解决问题"
+        android:textColor="#FF0000"/>
+
+    <EditText
+        android:id="@+id/Crash_Info"
+        android:gravity="top"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/Crash_Copy_Info"
+        android:textSize="12sp"
+        android:layout_below="@+id/Crash_Tip" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/Crash_Copy_Info"
+        android:text="复制内容"/>
+
+
+</RelativeLayout>

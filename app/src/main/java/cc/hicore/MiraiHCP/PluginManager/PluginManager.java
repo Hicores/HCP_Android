@@ -160,6 +160,9 @@ public class PluginManager {
                 }).show();
     }
     private static String getContainPluginVersion(String PluginID){
+        if (pluginInfo.containsKey(PluginID)){
+            return pluginInfo.get(PluginID).version;
+        }
         return null;
     }
     public static void checkAndStopPlugin(String ID){
