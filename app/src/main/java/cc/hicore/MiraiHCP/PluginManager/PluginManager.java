@@ -59,7 +59,7 @@ public class PluginManager {
                     }).setNeutralButton("删除插件", (dialog, which) -> {
                         new AlertDialog.Builder(context)
                                 .setTitle("确定删除插件")
-                                .setMessage("你真的要删除插件 "+plugin.pluginName+" 吗?")
+                                .setMessage("你真的要删除插件 "+plugin.pluginName+" 吗?\n(仅删除本体,不删除配置数据)")
                                 .setPositiveButton("确认删除", (dialog1, which1) -> {
                                     checkAndRemovePlugin(PluginID);
                                 }).setNeutralButton("不删除", (dialog12, which12) -> {
@@ -101,6 +101,7 @@ public class PluginManager {
             initInfo.resHelper = new ResBridgeImpl(plugin);
             initInfo.type = InitInfo.TYPE_MIRAIHCPBRIDGE_ANDROID;
             initInfo.AvailPermission = GlobalEnv.AVAIL_PERMISSION;
+            initInfo.cacheRoot = GlobalEnv.appContext.getCacheDir() + "/PluginCache/" + IDMD5 + "/";
 
             IHCPEvent eventReceiver = (IHCPEvent) m.invoke(null,initInfo);
             if (eventReceiver != null){
@@ -152,6 +153,7 @@ public class PluginManager {
                 .setNegativeButton(isReplace ? "替换" : "添加", (dialog, which) -> {
                     removeAuto.getAndSet(false);
                     saveHCPDataToFile(context,cachePath);
+                    FileUtils.deleteFile(new File(cachePath));
                 })
                 .setOnDismissListener(dialog -> {
                     if (removeAuto.get()){
@@ -200,6 +202,7 @@ public class PluginManager {
             FileUtils.copy(HCPTempPath + "/info.bin", GlobalEnv.FilePath + "/PluginBin/" + IDMD5 + "/info.bin");
             FileUtils.copy(HCPTempPath + "/dex.bin", GlobalEnv.FilePath + "/PluginBin/" + IDMD5 + "/dex.bin");
 
+
             ZipInputStream zInp = new ZipInputStream(new FileInputStream(HCPTempPath + "/res.bin"));
             ZipEntry entry;
             while ((entry = zInp.getNextEntry()) != null) {
@@ -214,6 +217,9 @@ public class PluginManager {
                 }
             }
             zInp.close();
+            new File(GlobalEnv.FilePath + "/PluginData/" + IDMD5).mkdirs();
+            FileUtils.copy(GlobalEnv.FilePath + "/PluginBin/" + IDMD5 + "/res/icon.png", GlobalEnv.FilePath + "/PluginData/" + IDMD5 + "/icon.png");
+            FileUtils.copy(GlobalEnv.FilePath + "/PluginBin/" + IDMD5 + "/info.bin", GlobalEnv.FilePath + "/PluginData/" + IDMD5 + "/info.bin");
 
             addNewPluginToList(ID);
         } catch (Exception e) {

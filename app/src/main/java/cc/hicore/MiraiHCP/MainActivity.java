@@ -264,7 +264,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         add_new_button.setOnClickListener(v->{
-            "111".substring(666);
             if (isNewAccount.get()){
                 add_new_account_click();
             }else {
@@ -405,6 +404,7 @@ public class MainActivity extends AppCompatActivity {
                     DataUtils.copyIns(ins,out);
                     out.close();
                     PluginManager.PreloadHCPDialog(this,cacheHCP);
+                    new File(cacheHCP).delete();
                 }catch (Exception e){
                     ToastUtils.ShowToast(this,"导入失败:\n"+e);
                 }
