@@ -401,8 +401,8 @@ public class LoginManager {
             }
             setCacheDir(context.getFilesDir());
             fileBasedDeviceInfo(context.getFilesDir()+"/device.json");
-            redirectBotLogToFile(new File(context.getExternalCacheDir()+"/log/","mirai.log"));
-            redirectNetworkLogToFile(new File(context.getExternalCacheDir()+"/log/","mirai_net.log"));
+            redirectBotLogToFile(new File(context.getCacheDir()+"/log/","mirai.log"));
+            redirectNetworkLogToFile(new File(context.getCacheDir()+"/log/","mirai_net.log"));
 
             int form = GlobalConfig.getInt(AccountUin,"Use_Form",1);
             if (form == 1){
