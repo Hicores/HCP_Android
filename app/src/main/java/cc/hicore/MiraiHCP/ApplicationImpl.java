@@ -61,6 +61,9 @@ public class ApplicationImpl extends Application {
         public void uncaughtException(@NonNull Thread thread, @NonNull Throwable throwable) {
             StringBuilder builder = new StringBuilder();
             builder.append("Thread:").append(thread.getName()).append("\n\n");
+
+            builder.append(PluginManager.collectPluginInfo());
+
             builder.append(Log.getStackTraceString(throwable));
             Intent intent = new Intent(app,CrashActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

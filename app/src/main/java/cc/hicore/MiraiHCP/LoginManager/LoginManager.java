@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -105,6 +106,9 @@ public class LoginManager {
         }
     }
     public static HashMap<String, BotStatus> addBots = new HashMap<>();
+    public static void setHiddenWindow(Window window){
+        window.getAttributes().setTitle("com.oplus.screenrecorder.FloatView");
+    }
     public static void addNewAccountDialog(Context context){
         LinearLayout mRoot = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.dialog_account_set,null);
 
@@ -160,6 +164,7 @@ public class LoginManager {
                     }
                 }).create();
         dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        setHiddenWindow(dialog.getWindow());
         dialog.show();
     }
     public static void onAccountItemClick(Context context,BotStatus status){
@@ -226,42 +231,45 @@ public class LoginManager {
 
                 })
                 .setPositiveButton(status.LoginStatus != 6 ? "登录" : "下线", (dialog1, which) -> {
-                    String AccountUin = edit_accountUin.getText().toString();
-                    String Password = edit_password.getText().toString();
-                    if (AccountUin.length() < 5 || AccountUin.length() > 10){
-                        ToastUtils.ShowToast(context,"账号输入有误");
-                        return;
-                    }
-                    if (Password.length() < 6){
-                        ToastUtils.ShowToast(context,"密码输入有误");
-                        return;
-                    }
+                    if (status.LoginStatus != 6){
+                        String AccountUin = edit_accountUin.getText().toString();
+                        String Password = edit_password.getText().toString();
+                        if (AccountUin.length() < 5 || AccountUin.length() > 10){
+                            ToastUtils.ShowToast(context,"账号输入有误");
+                            return;
+                        }
+                        if (Password.length() < 6){
+                            ToastUtils.ShowToast(context,"密码输入有误");
+                            return;
+                        }
+                        //检测是否勾选保存密码
+                        if (btn_save_pass.isChecked()){
+                            GlobalConfig.putString(AccountUin,"pass",Password);
+                            GlobalConfig.putBoolean(AccountUin,"save_pass",true);
+                        }else {
+                            GlobalConfig.putString(AccountUin,"pass","");
+                            GlobalConfig.putBoolean(AccountUin,"save_pass",false);
+                        }
+                        //检测是否勾选自动登录
+                        if (btn_auto_login.isChecked()){
+                            GlobalConfig.putBoolean(AccountUin,"autoLogin",true);
+                        }else {
+                            GlobalConfig.putBoolean(AccountUin,"autoLogin",false);
+                        }
+                        //判断协议类型并保存
+                        if (btn_form_android.isChecked()){
+                            GlobalConfig.putInt(AccountUin,"Use_Form",1);
+                        }else if (btn_form_ipad.isChecked()){
+                            GlobalConfig.putInt(AccountUin,"Use_Form",2);
+                        }else if (btn_form_watch.isChecked()){
+                            GlobalConfig.putInt(AccountUin,"Use_Form",3);
+                        }
 
-                    //检测是否勾选保存密码
-                    if (btn_save_pass.isChecked()){
-                        GlobalConfig.putString(AccountUin,"pass",Password);
-                        GlobalConfig.putBoolean(AccountUin,"save_pass",true);
+                        newLoginAccount(context,AccountUin,Password);
                     }else {
-                        GlobalConfig.putString(AccountUin,"pass","");
-                        GlobalConfig.putBoolean(AccountUin,"save_pass",false);
-                    }
-                    //检测是否勾选自动登录
-                    if (btn_auto_login.isChecked()){
-                        GlobalConfig.putBoolean(AccountUin,"autoLogin",true);
-                    }else {
-                        GlobalConfig.putBoolean(AccountUin,"autoLogin",false);
-                    }
-                    //判断协议类型并保存
-                    if (btn_form_android.isChecked()){
-                        GlobalConfig.putInt(AccountUin,"Use_Form",1);
-                    }else if (btn_form_ipad.isChecked()){
-                        GlobalConfig.putInt(AccountUin,"Use_Form",2);
-                    }else if (btn_form_watch.isChecked()){
-                        GlobalConfig.putInt(AccountUin,"Use_Form",3);
+                        status.botInstance.close();
                     }
 
-
-                    newLoginAccount(context,AccountUin,Password);
                 })
                 .setNeutralButton("删除", (dialog12, which) -> {
                     new AlertDialog.Builder(context)
@@ -275,6 +283,7 @@ public class LoginManager {
 
                 }).create();
         dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        setHiddenWindow(dialog.getWindow());
         dialog.show();
     }
     public static void removeAccountFromList(String Account){

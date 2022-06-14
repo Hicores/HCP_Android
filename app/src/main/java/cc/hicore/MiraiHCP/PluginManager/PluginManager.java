@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -293,5 +294,15 @@ public class PluginManager {
                 plugin.eventReceiver.onEvent(session);
             }
         }
+    }
+    public static String collectPluginInfo(){
+        StringBuilder builder = new StringBuilder("当前加载的插件信息:\n\n");
+        for (HCPPlugin plugin : pluginInfo.values()){
+            try{
+                builder.append(plugin.pluginName).append("(").append(plugin.version).append(")").append("[").append(plugin.id).append("]\n");
+                builder.append(plugin.isRemoved).append("|").append(plugin.isLoaded).append("|").append(plugin.isRunning).append("|").append(plugin.eventReceiver).append("\n\n");
+            }catch (Exception ignored){ }
+        }
+        return builder.toString();
     }
 }
