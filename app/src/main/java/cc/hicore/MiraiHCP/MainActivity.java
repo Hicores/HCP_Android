@@ -18,6 +18,7 @@ import android.os.Looper;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -44,6 +45,7 @@ import cc.hicore.Utils.DataUtils;
 import cc.hicore.Utils.FileUtils;
 import cc.hicore.Utils.HttpUtils;
 import cc.hicore.Utils.ToastUtils;
+import cc.hicore.Utils.Utils;
 
 public class MainActivity extends AppCompatActivity {
     private static final HandlerThread worker = new HandlerThread("HCP_Android_Worker");
@@ -74,12 +76,6 @@ public class MainActivity extends AppCompatActivity {
         registerSetButtonEvent();
         registerCallback();
 
-
-        //这里判断是否已经登录,后续可能加上一些使用服务来进行保活的操作,有可能在Activity没创建之前就进行了登录,所以就需要判断一下防止重复加载登录
-        if (!GlobalEnv.IsInited.getAndSet(true)){
-            LoginManager.loadAllAccount();
-            LoginManager.loginAutoLogin(this);
-        }
         AccountList = findViewById(R.id.Main_Account_List);
         PluginList = findViewById(R.id.Main_Plugin_List);
         handler.postDelayed(this::onFlushList,1000);

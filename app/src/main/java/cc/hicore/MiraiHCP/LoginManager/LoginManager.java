@@ -1,10 +1,12 @@
 package cc.hicore.MiraiHCP.LoginManager;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Message;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
@@ -21,6 +23,11 @@ import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.BotFactory;
 import net.mamoe.mirai.event.events.BotOfflineEvent;
 import net.mamoe.mirai.event.events.BotOnlineEvent;
+import net.mamoe.mirai.event.events.FriendMessageEvent;
+import net.mamoe.mirai.event.events.GroupEvent;
+import net.mamoe.mirai.event.events.GroupMessageEvent;
+import net.mamoe.mirai.event.events.GroupTempMessageEvent;
+import net.mamoe.mirai.event.events.MessageRecallEvent;
 import net.mamoe.mirai.network.LoginFailedException;
 import net.mamoe.mirai.network.UnsupportedSliderCaptchaException;
 import net.mamoe.mirai.utils.BotConfiguration;
@@ -298,7 +305,7 @@ public class LoginManager {
     }
     @SuppressLint("UnsafeOptInUsageError")
     public static void newLoginAccount(Context context, String AccountUin, String Password){
-        LoginSolver solver = new LoginSolver() {
+        LoginSolver solver = context != null ? new LoginSolver() {
             @Nullable
             @Override
             public Object onSolvePicCaptcha(@NonNull Bot bot, @NonNull byte[] bytes, @NonNull Continuation<? super String> continuation) {
@@ -387,9 +394,11 @@ public class LoginManager {
             public boolean isSliderCaptchaSupported() {
                 return true;
             }
-        };
+        } : null;
         Bot newBotInstance = BotFactory.INSTANCE.newBot(Long.parseLong(AccountUin),Password,new BotConfiguration(){{
-            setLoginSolver(solver);
+            if (context != null){
+                setLoginSolver(solver);
+            }
             setCacheDir(context.getFilesDir());
             fileBasedDeviceInfo(context.getFilesDir()+"/device.json");
             redirectBotLogToFile(new File(context.getExternalCacheDir()+"/log/","mirai.log"));
@@ -418,12 +427,17 @@ public class LoginManager {
                 }catch (LoginFailedException e){
                     status.LoginStatus = 4;
                     Utils.PostToMain(()->{
-                        new AlertDialog.Builder(context)
-                                .setTitle(status.AccountUin+"登录失败")
-                                .setMessage(e.getMessage())
-                                .setNegativeButton("确定", (dialog, which) -> {
+                        if (context == null){
+                            Toast.makeText(GlobalEnv.appContext, status.AccountUin+"登录失败:\n"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }else {
+                            new AlertDialog.Builder(context)
+                                    .setTitle(status.AccountUin+"登录失败")
+                                    .setMessage(e.getMessage())
+                                    .setNegativeButton("确定", (dialog, which) -> {
 
-                                }).show();
+                                    }).show();
+                        }
+
                     });
                 }catch (Throwable th){
                     status.LoginStatus = 5;
@@ -454,19 +468,25 @@ public class LoginManager {
             addBots.put(AccountUin,status);
         }
     }
-    public static void loginAutoLogin(Context context){
+    public static void loginAutoLogin(){
+        Activity act = Utils.getTopActivity();
         for (String AccountUin : addBots.keySet()){
             if (GlobalConfig.getBoolean(AccountUin,"autoLogin",false)){
                 String Password = GlobalConfig.getString(AccountUin,"pass","");
                 Bot bot = addBots.get(AccountUin).botInstance;
                 if (bot == null){
-                    newLoginAccount(context,AccountUin,Password);
+                    newLoginAccount(act,AccountUin,Password);
                 }
             }
         }
     }
+    @SuppressLint("UnsafeOptInUsageError")
     private static void registerProcessorEvent(Bot bot){
-
+        bot.getEventChannel().subscribeAlways(GroupMessageEvent.class,MessageProcessor::onGroupMsg);
+        bot.getEventChannel().subscribeAlways(FriendMessageEvent.class,MessageProcessor::onFriendMsg);
+        bot.getEventChannel().subscribeAlways(GroupTempMessageEvent.class, MessageProcessor::onTempMsg);
+        bot.getEventChannel().subscribeAlways(GroupEvent.class,MessageProcessor::onGroupEvent);
+        bot.getEventChannel().subscribeAlways(MessageRecallEvent.class,MessageProcessor::onRecallEvent);
     }
     public static Bot getAvailBot(String AccountUin){
         BotStatus status = addBots.get(AccountUin);

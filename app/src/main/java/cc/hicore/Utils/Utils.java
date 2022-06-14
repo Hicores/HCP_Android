@@ -1,5 +1,6 @@
 package cc.hicore.Utils;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -7,6 +8,9 @@ import android.os.Handler;
 import android.os.Looper;
 
 import java.text.DecimalFormat;
+import java.util.Map;
+
+import cc.hicore.MiraiHCP.ReflectUtils.MField;
 
 public class Utils {
     public static void PostToMain(Runnable run){
@@ -45,5 +49,19 @@ public class Utils {
         } else {
             return bytes + "字节";
         }
+    }
+    public static Activity getTopActivity() {
+        try {
+            Object ActivityThread = MField.GetStaticField(Class.forName("android.app.ActivityThread"), "sCurrentActivityThread");
+            Map<?, ?> activities = MField.GetField(ActivityThread, "mActivities");
+            for (Object activityRecord : activities.values()) {
+                boolean isPause = MField.GetField(activityRecord, "paused", boolean.class);
+                if (!isPause) {
+                    return MField.GetField(activityRecord, "activity");
+                }
+            }
+        } catch (Exception e) {
+        }
+        return null;
     }
 }

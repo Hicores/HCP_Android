@@ -287,4 +287,11 @@ public class PluginManager {
             }
         }
     }
+    public static void PluginMessageEvent(BaseSession session){
+        for (HCPPlugin plugin : pluginInfo.values()){
+            if (plugin.isRunning && plugin.eventReceiver != null){
+                plugin.eventReceiver.onEvent(session);
+            }
+        }
+    }
 }

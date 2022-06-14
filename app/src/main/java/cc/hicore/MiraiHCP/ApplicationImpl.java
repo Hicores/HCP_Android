@@ -4,12 +4,16 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import java.io.File;
 
+import cc.hicore.MiraiHCP.LogHelper.LogUtils;
+import cc.hicore.MiraiHCP.LoginManager.LoginManager;
 import cc.hicore.MiraiHCP.PluginManager.PluginManager;
 
 public class ApplicationImpl extends Application {
@@ -22,8 +26,20 @@ public class ApplicationImpl extends Application {
         super.attachBaseContext(base);
         String name=getCurProcessName(base);
         if (name!=null && !name.contains(":")){
+            LogUtils.info("HCP_Android_Loader","Start load HCP....");
             PluginManager.PreLoadPluginToList();
+            LogUtils.info("HCP_Android_Loader","Load all HCP success.");
+            //自动登录账号
+            LoginManager.loadAllAccount();
+            LogUtils.info("HCP_Android_Loader","Check and login all autologin account in 3s.");
+            new Handler(Looper.getMainLooper()).postDelayed(()->{
+                LogUtils.info("HCP_Android_Loader","Start check and login autologin accounts.");
+                LoginManager.loginAutoLogin();
+
+            },3000);
+
         }
+
     }
 
     @Override
