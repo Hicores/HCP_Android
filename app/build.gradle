@@ -4,7 +4,6 @@ plugins {
 
 android {
     compileSdk 32
-    ndkVersion '23.1.7779620'
     defaultConfig {
         applicationId "cc.hicore.MiraiHCP"
         minSdk 26
@@ -15,18 +14,9 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         resConfigs "zh-rCN", "zh"
-        ndk {
-            abiFilters 'armeabi-v7a',"arm64-v8a"
-        }
     }
     aaptOptions {
         additionalParameters '--allow-reserved-package-id','--package-id','0x48'
-    }
-    externalNativeBuild {
-        cmake {
-            path "./src/main/cpp/CMakeLists.txt"
-            version "3.18.1"
-        }
     }
 
     buildTypes {
@@ -57,5 +47,4 @@ dependencies {
     implementation "dev.rikka.shizuku:api:$shizuku_version"
 
     implementation "dev.rikka.shizuku:provider:$shizuku_version"
-    implementation 'io.github.vvb2060.ndk:xposeddetector:2.2'
 }
