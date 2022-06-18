@@ -12,14 +12,16 @@ import androidx.annotation.NonNull;
 
 import java.io.File;
 
+import cc.hicore.MiraiHCP.KeepAliveHelper.KeepAliveHelper;
 import cc.hicore.MiraiHCP.LogHelper.LogUtils;
 import cc.hicore.MiraiHCP.LoginManager.LoginManager;
 import cc.hicore.MiraiHCP.PluginManager.PluginManager;
 
 public class ApplicationImpl extends Application {
-    static Application app;
+    public static Application app;
     @Override
     protected void attachBaseContext(Context base) {
+        app = this;
         GlobalEnv.appContext = base;
         GlobalEnv.FilePath = base.getFilesDir().getAbsolutePath();
         new File(base.getExternalCacheDir()+"/log").mkdirs();
@@ -37,15 +39,16 @@ public class ApplicationImpl extends Application {
                 LoginManager.loginAutoLogin();
 
             },3000);
-
+            KeepAliveHelper.init();
         }
+
 
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        app = this;
+
         String name=getCurProcessName(GlobalEnv.appContext);
         if (name!=null && !name.contains(":")){
             Thread.setDefaultUncaughtExceptionHandler(new CrashHandler());

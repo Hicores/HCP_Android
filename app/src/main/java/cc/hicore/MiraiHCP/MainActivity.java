@@ -38,6 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import cc.hicore.MiraiHCP.KeepAliveHelper.KeepAliveHelper;
 import cc.hicore.MiraiHCP.LoginManager.LoginManager;
 import cc.hicore.MiraiHCP.PluginManager.PluginManager;
 import cc.hicore.MiraiHCP.data.HCPPlugin;
@@ -80,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
         PluginList = findViewById(R.id.Main_Plugin_List);
         handler.postDelayed(this::onFlushList,1000);
         handler.postDelayed(this::onFlushPluginList,1000);
+
+
     }
     AtomicBoolean isShow = new AtomicBoolean();
     @SuppressLint("SetTextI18n")
