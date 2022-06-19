@@ -10,6 +10,10 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
 import cc.hicore.MiraiHCP.R;
 
 public class MainServiceAlive extends Service {
@@ -35,5 +39,20 @@ public class MainServiceAlive extends Service {
                 .setWhen(System.currentTimeMillis())
                 .build();
         startForeground(1, notification);
+        new Thread(this::SocketMonitor).start();
+
+        Intent intent = new Intent(this,ServiceMonitor.class);
+        startService(intent);
+
+    }
+    private void SocketMonitor(){
+        try {
+            ServerSocket server = new ServerSocket(33661);
+            while (true){
+                Socket socket = server.accept();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
