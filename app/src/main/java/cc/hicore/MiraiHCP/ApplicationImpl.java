@@ -54,11 +54,6 @@ public class ApplicationImpl extends Application {
         String name=getCurProcessName(GlobalEnv.appContext);
         if (name!=null && !name.contains(":")){
             Thread.setDefaultUncaughtExceptionHandler(new CrashHandler());
-            try{
-                System.loadLibrary("native_lib");
-            }catch (Throwable th){
-                th.printStackTrace();
-            }
         }
     }
     private static class CrashHandler implements Thread.UncaughtExceptionHandler{

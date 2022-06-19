@@ -40,6 +40,7 @@ public class MainServiceAlive extends Service {
                 .setContentText("HCP_Android正在运行..")
                 .setSmallIcon(R.drawable.global_icon)
                 .setWhen(System.currentTimeMillis())
+                .setPriority(NotificationCompat.PRIORITY_MIN)
                 .build();
         startForeground(1, notification);
         new Thread(this::SocketMonitor).start();

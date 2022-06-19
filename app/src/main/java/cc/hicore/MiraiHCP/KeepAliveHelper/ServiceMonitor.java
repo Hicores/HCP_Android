@@ -26,17 +26,25 @@ public class ServiceMonitor extends Service {
         Log.d("HCP_Android","Background_Service_Start");
         if (!GlobalConfig.getBoolean("global","keepAlive",false)){
             stopSelf();
-            System.exit(0);
             return;
         }
-        new Thread(this::newMonitor).start();
+        new Thread(this::newMonitor,"HCP_Monitor").start();
 
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        System.exit(0);
+    }
+
+    int count = 0;
     private void newMonitor(){
         while (true){
             try {
                 Socket socket = new Socket("127.0.0.1",33661);
                 InputStream ins = socket.getInputStream();
+                count = 0;
                 while (true){
                     int i = ins.read();
                     if (i == 88){
@@ -48,7 +56,12 @@ public class ServiceMonitor extends Service {
                     }
                 }
             } catch (IOException e) {
+                count++;
                 e.printStackTrace();
+            }
+            if (count >5){
+                stopSelf();
+                return;
             }
             Intent intent = new Intent(this,MainServiceAlive.class);
             startService(intent);

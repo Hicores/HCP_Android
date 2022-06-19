@@ -16,7 +16,7 @@ public class ShizukuService extends IUserService.Stub{
      * Constructor is required.
      */
     public ShizukuService() {
-        new Thread(this::newMonitor).start();
+        new Thread(this::newMonitor,"Daemon_Monitor").start();
     }
     int count = 0;
     private void newMonitor(){
@@ -46,7 +46,6 @@ public class ShizukuService extends IUserService.Stub{
     }
     private void restartService(){
         try {
-            Thread.sleep(2000);
             Log.d("UserService","HCP_Android dead ,restarting...");
             Process process = Runtime.getRuntime().exec("am startservice cc.hicore.MiraiHCP/cc.hicore.MiraiHCP.KeepAliveHelper.ServiceMonitor");
             process.waitFor();

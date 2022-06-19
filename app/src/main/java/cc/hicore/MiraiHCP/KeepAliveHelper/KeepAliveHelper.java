@@ -16,12 +16,14 @@ import cc.hicore.Utils.ToastUtils;
 import rikka.shizuku.Shizuku;
 
 public class KeepAliveHelper {
+    private static volatile boolean BinderReceiveSuccess = false;
     static Shizuku.OnRequestPermissionResultListener listener = (requestCode, grantResult) -> {
         if (requestCode == 77 && grantResult == PackageManager.PERMISSION_GRANTED){
             startShizukuService();
         }
     };
    static Shizuku.OnBinderReceivedListener BINDER_RECEIVED_LISTENER = () -> {
+       BinderReceiveSuccess = true;
        if (requestShizuku()){
            startShizukuService();
        }
@@ -30,6 +32,11 @@ public class KeepAliveHelper {
         if (GlobalConfig.getBoolean("global","keepAlive",false)){
             Intent intent = new Intent(ApplicationImpl.app,MainServiceAlive.class);
             GlobalEnv.appContext.startService(intent);
+            if (BinderReceiveSuccess){
+                if (requestShizuku()){
+                    startShizukuService();
+                }
+            }
             Shizuku.addBinderReceivedListener(BINDER_RECEIVED_LISTENER);
         }
     }
