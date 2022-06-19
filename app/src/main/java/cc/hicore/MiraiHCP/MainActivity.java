@@ -23,6 +23,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -41,6 +43,7 @@ import java.util.zip.ZipOutputStream;
 import cc.hicore.MiraiHCP.KeepAliveHelper.KeepAliveHelper;
 import cc.hicore.MiraiHCP.LoginManager.LoginManager;
 import cc.hicore.MiraiHCP.PluginManager.PluginManager;
+import cc.hicore.MiraiHCP.config.GlobalConfig;
 import cc.hicore.MiraiHCP.data.HCPPlugin;
 import cc.hicore.Utils.DataUtils;
 import cc.hicore.Utils.FileUtils;
@@ -330,6 +333,19 @@ public class MainActivity extends AppCompatActivity {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setData(Uri.parse("package:" + getPackageName()));
             startActivity(intent);
+        });
+
+        CheckBox checkBox = findViewById(R.id.Main_Set_CheckBox_Enable_KeepAlive);
+        checkBox.setChecked(GlobalConfig.getBoolean("global","keepAlive",false));
+        checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (buttonView.isPressed()){
+                if (isChecked){
+                    GlobalConfig.putBoolean("global","keepAlive",true);
+                    KeepAliveHelper.init();
+                }else {
+                    KeepAliveHelper.StopKeepAliveService();
+                }
+            }
         });
     }
     ActivityResultLauncher<Intent> launcher_output_devInfo;

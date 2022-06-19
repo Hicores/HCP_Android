@@ -187,6 +187,8 @@
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
                 android:id="@+id/Main_Set_CheckBox_Enable_KeepAlive"
                 android:text="开启简单的主动保活机制(配合shizuku效果更好)"/>
         </LinearLayout>

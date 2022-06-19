@@ -43,6 +43,9 @@ public class ServiceMonitor extends Service {
                         stopSelf();
                         return;
                     }
+                    if (i == -1){
+                        throw new IOException("Socket broken.");
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();

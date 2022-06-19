@@ -31,6 +31,10 @@ public class ShizukuService extends IUserService.Stub{
                         exit();
                         return;
                     }
+                    Log.d("UserService",""+i);
+                    if (i == -1){
+                        throw new IOException("Socket broken.");
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -42,6 +46,8 @@ public class ShizukuService extends IUserService.Stub{
     }
     private void restartService(){
         try {
+            Thread.sleep(2000);
+            Log.d("UserService","HCP_Android dead ,restarting...");
             Process process = Runtime.getRuntime().exec("am startservice cc.hicore.MiraiHCP/cc.hicore.MiraiHCP.KeepAliveHelper.ServiceMonitor");
             process.waitFor();
             Thread.sleep(2000);

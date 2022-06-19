@@ -74,6 +74,7 @@ public class ApplicationImpl extends Application {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("dump",builder.toString());
             app.startActivity(intent);
+            KeepAliveHelper.StopKeepAliveService();
             System.exit(0);
         }
     }

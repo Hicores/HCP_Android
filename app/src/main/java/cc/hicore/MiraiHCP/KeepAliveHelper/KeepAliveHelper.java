@@ -1,9 +1,15 @@
 package cc.hicore.MiraiHCP.KeepAliveHelper;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.os.IBinder;
+import android.os.RemoteException;
+import android.util.Log;
 
 import cc.hicore.MiraiHCP.ApplicationImpl;
+import cc.hicore.MiraiHCP.BuildConfig;
 import cc.hicore.MiraiHCP.GlobalEnv;
 import cc.hicore.MiraiHCP.config.GlobalConfig;
 import cc.hicore.Utils.ToastUtils;
@@ -21,9 +27,11 @@ public class KeepAliveHelper {
        }
     };
     public static void init(){
-        Intent intent = new Intent(ApplicationImpl.app,MainServiceAlive.class);
-        GlobalEnv.appContext.startService(intent);
-        Shizuku.addBinderReceivedListener(BINDER_RECEIVED_LISTENER);
+        if (GlobalConfig.getBoolean("global","keepAlive",false)){
+            Intent intent = new Intent(ApplicationImpl.app,MainServiceAlive.class);
+            GlobalEnv.appContext.startService(intent);
+            Shizuku.addBinderReceivedListener(BINDER_RECEIVED_LISTENER);
+        }
     }
     private static boolean requestShizuku(){
         try{
@@ -40,10 +48,36 @@ public class KeepAliveHelper {
         }
         return false;
     }
+    private static final ServiceConnection userServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder binder) {
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+
+        }
+    };
+    private static final Shizuku.UserServiceArgs userServiceArgs =
+            new Shizuku.UserServiceArgs(new ComponentName(BuildConfig.APPLICATION_ID, ShizukuService.class.getName()))
+                    .daemon(true)
+                    .processNameSuffix("daemon")
+                    .version(BuildConfig.VERSION_CODE);
     private static void startShizukuService(){
-        ToastUtils.ShowToast(GlobalEnv.appContext,"授权成功 ");
+        try{
+            Shizuku.bindUserService(userServiceArgs, userServiceConnection);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
     public static void StopKeepAliveService(){
         GlobalConfig.putBoolean("global","keepAlive",false);
+        try {
+            Shizuku.unbindUserService(userServiceArgs,userServiceConnection,true);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

@@ -38,7 +38,7 @@ public class GlobalConfig {
         SharedPreferences share = GlobalEnv.appContext.getSharedPreferences(col,0);
         SharedPreferences.Editor editor = share.edit();
         editor.putBoolean(key,value);
-        editor.apply();
+        editor.commit();
     }
 
     public static List<String> getList(String col, String key){
