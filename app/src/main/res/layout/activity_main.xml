@@ -184,6 +184,11 @@
                     android:id="@+id/Main_Set_Button_Battery_While"
                     android:text="电量白名单"/>
             </LinearLayout>
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/Main_Set_CheckBox_Enable_KeepAlive"
+                android:text="开启简单的主动保活机制(配合shizuku效果更好)"/>
         </LinearLayout>
     </ScrollView>
 

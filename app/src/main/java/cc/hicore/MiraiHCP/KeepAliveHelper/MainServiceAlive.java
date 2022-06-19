@@ -11,10 +11,13 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import cc.hicore.MiraiHCP.R;
+import cc.hicore.MiraiHCP.config.GlobalConfig;
 
 public class MainServiceAlive extends Service {
 
@@ -40,19 +43,51 @@ public class MainServiceAlive extends Service {
                 .build();
         startForeground(1, notification);
         new Thread(this::SocketMonitor).start();
+        new Thread(this::killServiceMonitor).start();
 
         Intent intent = new Intent(this,ServiceMonitor.class);
         startService(intent);
 
     }
+    private ArrayList<Socket> cacheSocket = new ArrayList<>();
+    ServerSocket server;
     private void SocketMonitor(){
         try {
-            ServerSocket server = new ServerSocket(33661);
+            server = new ServerSocket(33661);
             while (true){
                 Socket socket = server.accept();
+                cacheSocket.add(socket);
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+    private void killServiceMonitor(){
+        while (true){
+            if (!GlobalConfig.getBoolean("global","keepAlive",false)){
+                for (Socket socket :cacheSocket){
+                    try{
+                        OutputStream out = socket.getOutputStream();
+                        out.write(88);
+                        out.flush();
+                        socket.close();
+                    }catch (Exception e){
+
+                    }
+                }
+                try {
+                    server.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                stopSelf();
+                return;
+            }
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

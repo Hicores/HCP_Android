@@ -8,7 +8,10 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
+
+import cc.hicore.MiraiHCP.config.GlobalConfig;
 
 public class ServiceMonitor extends Service {
     @Nullable
@@ -21,15 +24,26 @@ public class ServiceMonitor extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d("HCP_Android","Background_Service_Start");
+        if (!GlobalConfig.getBoolean("global","keepAlive",false)){
+            stopSelf();
+            System.exit(0);
+            return;
+        }
         new Thread(this::newMonitor).start();
+
     }
     private void newMonitor(){
         while (true){
             try {
                 Socket socket = new Socket("127.0.0.1",33661);
-                byte[] b = new byte[1024];
-                socket.getInputStream().read(b);
-                socket.close();
+                InputStream ins = socket.getInputStream();
+                while (true){
+                    int i = ins.read();
+                    if (i == 88){
+                        stopSelf();
+                        return;
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -16,6 +16,7 @@ import cc.hicore.MiraiHCP.KeepAliveHelper.KeepAliveHelper;
 import cc.hicore.MiraiHCP.LogHelper.LogUtils;
 import cc.hicore.MiraiHCP.LoginManager.LoginManager;
 import cc.hicore.MiraiHCP.PluginManager.PluginManager;
+import rikka.sui.Sui;
 
 public class ApplicationImpl extends Application {
     public static Application app;
@@ -24,6 +25,7 @@ public class ApplicationImpl extends Application {
         app = this;
         GlobalEnv.appContext = base;
         GlobalEnv.FilePath = base.getFilesDir().getAbsolutePath();
+        Sui.init(BuildConfig.APPLICATION_ID);
         new File(base.getExternalCacheDir()+"/log").mkdirs();
         super.attachBaseContext(base);
         String name=getCurProcessName(base);
