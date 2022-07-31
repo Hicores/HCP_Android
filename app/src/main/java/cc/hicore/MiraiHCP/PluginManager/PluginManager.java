@@ -106,6 +106,7 @@ public class PluginManager {
 
             IHCPEvent eventReceiver = (IHCPEvent) m.invoke(null,initInfo);
             if (eventReceiver != null){
+                eventReceiver.onEnableFirst();
                 plugin.eventReceiver = eventReceiver;
                 plugin.isLoaded  = true;
             }else {

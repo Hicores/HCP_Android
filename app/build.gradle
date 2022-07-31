@@ -40,8 +40,8 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation files('../jars/mirai-core-all-2.12.0-all.jar')
-    implementation files('Z:/Project/HCPRebot/HCPApi/out/artifacts/HCPApi_jar/HCPApi.jar')
+    implementation files('../jars/mirai.jar')
+    implementation files('../jars/HCPApi.jar')
 
     def shizuku_version = '12.1.0'
     implementation "dev.rikka.shizuku:api:$shizuku_version"
