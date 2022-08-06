@@ -14,6 +14,7 @@ import java.io.File;
 
 import cc.hicore.MiraiHCP.KeepAliveHelper.KeepAliveHelper;
 import cc.hicore.MiraiHCP.LogHelper.LogUtils;
+import cc.hicore.MiraiHCP.LoginManager.DeviceInfoGenerate;
 import cc.hicore.MiraiHCP.LoginManager.LoginManager;
 import cc.hicore.MiraiHCP.PluginManager.PluginManager;
 import rikka.sui.Sui;
@@ -22,14 +23,21 @@ public class ApplicationImpl extends Application {
     public static Application app;
     @Override
     protected void attachBaseContext(Context base) {
+        //保存基本环境参数
         app = this;
         GlobalEnv.appContext = base;
         GlobalEnv.FilePath = base.getFilesDir().getAbsolutePath();
+        //初始化Shizuku
         Sui.init(BuildConfig.APPLICATION_ID);
+        //创建Log目录
         new File(base.getExternalCacheDir()+"/log").mkdirs();
         super.attachBaseContext(base);
         String name=getCurProcessName(base);
+        //仅仅在主进程才会进行插件加载,登录,防止在保活进程中加载插件导致各种意外发生
         if (name!=null && !name.contains(":")){
+            //初始化设备信息
+            DeviceInfoGenerate.initDeviceInfo(base);
+            //自动加载插件,由于加载时未登录账号,所以加载时插件是无法获取账号信息的
             LogUtils.info("HCP_Android_Loader","Start load HCP....");
             PluginManager.PreLoadPluginToList();
             LogUtils.info("HCP_Android_Loader","Load all HCP success.");
@@ -41,6 +49,7 @@ public class ApplicationImpl extends Application {
                 LoginManager.loginAutoLogin();
 
             },3000);
+            //初始化后台保活器
             KeepAliveHelper.init();
         }
 
@@ -50,12 +59,16 @@ public class ApplicationImpl extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        //初始化主进程崩溃提示
         String name=getCurProcessName(GlobalEnv.appContext);
         if (name!=null && !name.contains(":")){
             Thread.setDefaultUncaughtExceptionHandler(new CrashHandler());
         }
     }
+
+    /*
+    在崩溃的时候收集相关信息并提示,由于项目没有Native层的库,捕获java层崩溃理论上就能包括所有的崩溃情况
+     */
     private static class CrashHandler implements Thread.UncaughtExceptionHandler{
         @Override
         public void uncaughtException(@NonNull Thread thread, @NonNull Throwable throwable) {

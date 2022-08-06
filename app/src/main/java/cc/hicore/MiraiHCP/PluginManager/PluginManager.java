@@ -3,6 +3,7 @@ package cc.hicore.MiraiHCP.PluginManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -26,6 +27,7 @@ import cc.hicore.HCPBridge.data.BaseSession;
 import cc.hicore.HCPBridge.data.IHCPEvent;
 import cc.hicore.HCPBridge.data.InitInfo;
 import cc.hicore.MiraiHCP.GlobalEnv;
+import cc.hicore.MiraiHCP.LogHelper.LogUtils;
 import cc.hicore.MiraiHCP.R;
 import cc.hicore.MiraiHCP.config.GlobalConfig;
 import cc.hicore.MiraiHCP.data.HCPPlugin;
@@ -74,9 +76,14 @@ public class PluginManager {
             loadPluginInner(plugin);
         }
         if (plugin.eventReceiver != null){
-            plugin.eventReceiver.onEnable();
-            plugin.isRunning = true;
-            GlobalConfig.putBoolean(plugin.id,"isEnable",true);
+            try{
+                plugin.eventReceiver.onEnable();
+                plugin.isRunning = true;
+                GlobalConfig.putBoolean(plugin.id,"isEnable",true);
+            }catch (Throwable th){
+                LogUtils.warn("onEnableError",plugin.pluginName+"->"+ Log.getStackTraceString(th));
+            }
+
         }
 
     }
